@@ -1,0 +1,52 @@
+version: "2.4"
+services:
+  traefik:
+    image: traefik:latest
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: always
+  vault:
+    build: ./vault
+    command:
+      - server
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ${SERVICE_CONFIG_PATH}/vault/data:/vault/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.middlewares.vault-redirect-web-secure.redirectscheme.scheme=https
+      - traefik.http.routers.vault-web.middlewares=vault-redirect-web-secure
+      - traefik.http.routers.vault-web.rule=Host(`vault.${DNS_NAME}`)
+      - traefik.http.routers.vault-web.entrypoints=web
+      - traefik.http.routers.vault-web-secure.rule=Host(`vault.${DNS_NAME}`)
+      - traefik.http.routers.vault-web-secure.tls=true
+      - traefik.http.routers.vault-web-secure.entrypoints=websecure
+      - traefik.http.services.vault-web-secure.loadbalancer.server.port=8200
+    restart: always
+  vault-totp-app:
+    build: ./
+    restart: always
+    environment:
+      - VAULT_WELL_KNOWN_URL=https://vault.${DNS_NAME}/v1/identity/oidc/provider/default/.well-known/openid-configuration
+      - VAULT_CLIENT_ID=....
+      - VAULT_CLIENT_SECRET=....
+      - NEXTAUTH_SECRET=....
+      - NEXTAUTH_URL=https://totp.${DNS_NAME}
+      - NEXT_APP_EN_DOMAIN=totp.${DNS_NAME}
+      - VAULT_BASE_URL=https://vault.${DNS_NAME}/v1
+      - VAULT_AUTH_TOKEN=....
+    labels:
+      - traefik.enable=true
+      - traefik.http.middlewares.totp-redirect-web-secure.redirectscheme.scheme=https
+      - traefik.http.routers.totp-web.middlewares=totp-redirect-web-secure
+      - traefik.http.routers.totp-web.rule=Host(`totp.${DNS_NAME}`)
+      - traefik.http.routers.totp-web.entrypoints=web
+      - traefik.http.routers.totp-web-secure.rule=Host(`totp.${DNS_NAME}`)
+      - traefik.http.routers.totp-web-secure.tls=true
+      - traefik.http.routers.totp-web-secure.entrypoints=websecure
+      - traefik.http.services.totp-web-secure.loadbalancer.server.port=3000

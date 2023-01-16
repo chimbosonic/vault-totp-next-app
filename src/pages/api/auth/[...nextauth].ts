@@ -33,7 +33,7 @@ export const authOptions = {
       return session;
     },
   },
-  debug: process.env.NODE_ENV !== "production"
+  debug: process.env.NODE_ENV !== "production",
 } as AuthOptions;
 
 export default NextAuth(authOptions);

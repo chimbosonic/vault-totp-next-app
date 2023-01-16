@@ -9,6 +9,10 @@ Uses Next Auth to auth the app via OIDC.
 OIDC provider is Vault tho I haven't figured out how to reuse the OIDC tokens to make the calls to Vault for the TOTP tokens.
 So for now it uses a Auth Token generated via `vault token create`
 
+## Preview
+
+![alt Example Preview](./example.png)
+
 ## Getting Started
 
 First, run the development server:

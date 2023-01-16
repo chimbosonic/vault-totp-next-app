@@ -14,20 +14,16 @@ export type TOTPToken = {
 
 
 
-export async function getTOTPTokens(): Promise<TOTPToken[]> {
+export async function getTOTPTokens(): Promise<Array<TOTPToken>> {
   const keyNames: string[] = await listKeys();
-  console.log(`Got these keys back: ${keyNames}`);
-
-  const totpTokens: TOTPToken[] = [];
+  const totpTokens = new Array<TOTPToken>();
 
   for (const keyName of keyNames) {
-    console.log(`Looking up ${keyName}`)
     const totpToken: TOTPToken | undefined = await getTOTPToken(keyName)
     if(totpToken) {
       totpTokens.push(totpToken);
     }
   }
-  console.log(totpTokens)
 
   return totpTokens
 }
@@ -42,7 +38,7 @@ async function getTOTPToken(keyName: string): Promise<TOTPToken | undefined> {
   const request = {
     method: "GET",
     headers: headers,
-    body: null,
+    body: null
   };
 
   return fetch(url, request)
@@ -51,15 +47,16 @@ async function getTOTPToken(keyName: string): Promise<TOTPToken | undefined> {
     })
     .then(async (data) => {
       if(data.errors) {
-        console.log(data.errors)
+        console.error("Error getting totp details:",data.errors)
         return undefined
       } else if(data.data) {
-        return {
+        const token: TOTPToken = {
           keyName: keyName,
           accountName: data.data.account_name,
           issuerName: data.data.issuer,
           code: await getTOTPTokenCode(keyName)
-        } as TOTPToken
+        }
+        return token
       }
     })
 }
@@ -74,7 +71,7 @@ function getTOTPTokenCode(keyName: string): Promise<string> {
   const request = {
     method: "GET",
     headers: headers,
-    body: null,
+    body: null
   };
 
   return fetch(url, request)
@@ -83,7 +80,7 @@ function getTOTPTokenCode(keyName: string): Promise<string> {
     })
     .then((data) => {
       if(data.errors) {
-        console.log(data.errors)
+        console.error("Error getting totp code:",data.errors)
         return [""]
       } else if(data.data) {
         return data.data.code
@@ -94,15 +91,14 @@ function getTOTPTokenCode(keyName: string): Promise<string> {
 
 async function listKeys(): Promise<string[]> {
   const url = `${VAULT_CONFIG.baseUrl}/totp/keys`
-
   const headers = {
-    "X-Vault-Token": VAULT_CONFIG.authToken,
+    "X-Vault-Token": VAULT_CONFIG.authToken
   };
 
   const request = {
     method: "LIST",
     headers: headers,
-    body: null,
+    body: null
   };
 
   return fetch(url, request)
@@ -111,7 +107,7 @@ async function listKeys(): Promise<string[]> {
     })
     .then((data) => {
       if(data.errors) {
-        console.log(data.errors)
+        console.error("Error listing totp keys:",data.errors)
         return [""]
       } else if(data.data) {
         return data.data.keys

@@ -1,9 +1,10 @@
 # vault-totp-next-app
+
 Frontend for Hashicorp Vault TOTP Tokens.
 
 Caution this was built with a single user in mind. The App will have access to all tokens in Vault.
 
-Uses Next Auth to auth the app via OIDC. 
+Uses Next Auth to auth the app via OIDC.
 
 OIDC provider is Vault tho I haven't figured out how to reuse the OIDC tokens to make the calls to Vault for the TOTP tokens.
 So for now it uses a Auth Token generated via `vault token create`
@@ -25,6 +26,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 If using docker-compose you will need to setup Vault then populate the environment and recreate `vault-totp-app`
 
 ## REQUIRED ENV VARS
+
+Add these to `.env.local` if running locally
 
 ```bash
 VAULT_WELL_KNOWN_URL=https://<VAULT_DOMAIN_NAME>/v1/identity/oidc/provider/<VAULT_PROVIDER_NAME>/.well-known/openid-configuration

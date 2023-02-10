@@ -15,9 +15,8 @@
 }
 
 .totpCode {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 500;
-  height: 34px;
   cursor: pointer;
 }
 
@@ -30,6 +29,24 @@
   color: #9c9c9c;
   height: 2em;
   transition: 0.2s;
+}
+
+.totpLabelIssuer {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 15px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  color: #9c9c9c;
+}
+
+.totpLabelAccountName {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 15px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  color: #9c9c9c;
 }
 
 .totpContainer {

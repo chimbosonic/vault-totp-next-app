@@ -8,7 +8,6 @@ export function Token() {
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
     let interval = setInterval(() => {
       fetch("/api/tokens")
         .then((res) => res.json())
@@ -47,13 +46,14 @@ export function Token() {
       {data.tokens.map((token: TOTPToken) => {
         return (
           <div className={styles.totpContainer} key={`token:${token.keyName}"`}>
-            <div className={styles.totpLabel} key={`issuer:${token.keyName}"`}>
-              <div>{token.issuerName}</div>
-              <div>({token.accountName})</div>
+            <div className={styles.totpLabel}>
+              <div className={styles.totpLabelIssuer}>{token.issuerName}</div>
+              <div className={styles.totpLabelAccountName}>
+                ({token.accountName})
+              </div>
             </div>
-            <div key={`code:${token.keyName}"`}>
+            <div className={styles.totpCode} key={`code:${token.keyName}"`}>
               <code
-                className={styles.totpCode}
                 onClick={() => {
                   navigator.clipboard.writeText(token.code);
                 }}
